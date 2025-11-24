@@ -526,11 +526,127 @@
             font-size: 20px;
             z-index: 1;
         }
+
+        /* Name Input Form */
+        .name-input-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .name-input-form {
+            background: linear-gradient(135deg, #f5e6e8 0%, #d5c6c8 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(139, 35, 50, 0.2);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .name-input-form h2 {
+            color: #8b2332;
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-family: 'Georgia', serif;
+        }
+
+        .name-input-form p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .name-input-form input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #8b2332;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Georgia', serif;
+            margin-bottom: 20px;
+            background: white;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .name-input-form input:focus {
+            border-color: #a83244;
+            box-shadow: 0 0 10px rgba(139, 35, 50, 0.2);
+        }
+
+        .name-input-form button {
+            background: linear-gradient(135deg, #8b2332 0%, #a83244 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Georgia', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 35, 50, 0.3);
+        }
+
+        .name-input-form button:hover {
+            background: linear-gradient(135deg, #a83244 0%, #c44252 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 35, 50, 0.4);
+        }
+
+        /* Share Button */
+        .share-btn {
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #8b2332;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-family: 'Georgia', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            font-weight: bold;
+            z-index: 30;
+        }
+
+        .share-btn:hover {
+            background: linear-gradient(135deg, #f4d03f 0%, #f7dc6f 100%);
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
     <!-- Floating hearts background -->
     <div class="hearts-background" id="heartsBackground"></div>
+
+    <!-- Name Input Form -->
+    <div class="name-input-overlay" id="nameInputOverlay">
+        <div class="name-input-form">
+            <h2>Personnalisez votre invitation</h2>
+            <p>Entrez votre nom complet pour personnaliser l'invitation</p>
+            <input type="text" id="fullNameInput" placeholder="Votre nom complet" maxlength="50">
+            <button id="createInvitationBtn">Créer l'invitation</button>
+        </div>
+    </div>
 
     <div class="container">
         <div class="envelope-wrapper" id="envelopeWrapper">
@@ -565,10 +681,75 @@
             <div class="click-prompt">
                 Cliquez pour ouvrir<br>l'invitation
             </div>
+            
+            <!-- Share Button -->
+            <button class="share-btn hidden" id="shareBtn">
+                📤 Partager cette invitation
+            </button>
         </div>
     </div>
 
+    <!-- Guest name display (for personalized invitation) -->
+    <div id="guestNameDisplay" class="hidden" style="position: fixed; top: 20px; left: 20px; color: #8b2332; font-size: 18px; font-weight: bold; z-index: 100; background: rgba(255,255,255,0.9); padding: 10px 20px; border-radius: 10px; border: 2px solid #8b2332;">
+        Pour: <span id="displayName"></span>
+    </div>
+
     <script>
+        // URL Parameters and Name Management
+        const nameInputOverlay = document.getElementById('nameInputOverlay');
+        const fullNameInput = document.getElementById('fullNameInput');
+        const createInvitationBtn = document.getElementById('createInvitationBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const guestNameDisplay = document.getElementById('guestNameDisplay');
+        const displayName = document.getElementById('displayName');
+
+        // Get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Initialize on page load
+        function initializePage() {
+            const nameFromUrl = getUrlParameter('name');
+            
+            if (nameFromUrl) {
+                // Show personalized invitation directly
+                const decodedName = decodeURIComponent(nameFromUrl);
+                displayName.textContent = decodedName;
+                guestNameDisplay.classList.remove('hidden');
+                nameInputOverlay.classList.add('hidden');
+            } else {
+                // Show name input form
+                nameInputOverlay.classList.remove('hidden');
+            }
+        }
+
+        // Create personalized invitation
+        createInvitationBtn.addEventListener('click', function() {
+            const name = fullNameInput.value.trim();
+            
+            if (name) {
+                displayName.textContent = name;
+                guestNameDisplay.classList.remove('hidden');
+                nameInputOverlay.classList.add('hidden');
+                
+                // Update URL without page reload
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('name', encodeURIComponent(name));
+                window.history.replaceState({}, '', newUrl);
+            } else {
+                alert('Veuillez entrer votre nom complet');
+            }
+        });
+
+        // Allow Enter key to create invitation
+        fullNameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                createInvitationBtn.click();
+            }
+        });
+
         // Envelope interaction
         const envelopeWrapper = document.getElementById('envelopeWrapper');
         const closeButton = document.getElementById('closeButton');
@@ -579,6 +760,11 @@
                 envelopeWrapper.classList.add('opened');
                 isOpen = true;
                 createHearts();
+                
+                // Show share button after opening
+                setTimeout(() => {
+                    shareBtn.classList.remove('hidden');
+                }, 2000);
             }
         });
 
@@ -586,7 +772,38 @@
             e.stopPropagation();
             envelopeWrapper.classList.remove('opened');
             isOpen = false;
+            shareBtn.classList.add('hidden');
         });
+
+        // Share functionality
+        shareBtn.addEventListener('click', function() {
+            const currentUrl = window.location.href;
+            
+            if (navigator.share) {
+                // Use Web Share API if available (mobile)
+                navigator.share({
+                    title: 'Invitation Mariage - Yahya & Yassmine',
+                    text: 'Vous êtes invité(e) à notre mariage !',
+                    url: currentUrl
+                });
+            } else {
+                // Fallback: Copy to clipboard
+                navigator.clipboard.writeText(currentUrl).then(() => {
+                    // Show feedback
+                    const originalText = shareBtn.innerHTML;
+                    shareBtn.innerHTML = '✅ Lien copié !';
+                    setTimeout(() => {
+                        shareBtn.innerHTML = originalText;
+                    }, 2000);
+                }).catch(() => {
+                    // If clipboard fails, show the URL
+                    prompt('Copiez ce lien pour partager l\'invitation:', currentUrl);
+                });
+            }
+        });
+
+        // Initialize page
+        initializePage();
 
         // Create floating hearts
         function createHearts() {
