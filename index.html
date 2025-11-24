@@ -632,6 +632,171 @@
         .hidden {
             display: none !important;
         }
+
+        /* Countdown Timer */
+        .countdown-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(139, 35, 50, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 50;
+        }
+
+        .countdown-title {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #f4d03f;
+            font-weight: bold;
+        }
+
+        .countdown-timer {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .time-unit {
+            text-align: center;
+            min-width: 45px;
+        }
+
+        .time-unit .number {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .time-unit .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+        }
+
+        .countdown-separator {
+            font-size: 20px;
+            font-weight: bold;
+            opacity: 0.6;
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 0.6; }
+            51%, 100% { opacity: 0.2; }
+        }
+
+        /* Wedding Day Display (when countdown ends) */
+        .wedding-day-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #8b2332 0%, #a83244 50%, #d4af37 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            text-align: center;
+            color: white;
+        }
+
+        .wedding-day-content {
+            max-width: 600px;
+            padding: 40px;
+            animation: weddingDayAppear 2s ease-out;
+        }
+
+        .wedding-day-title {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: goldPulse 3s ease-in-out infinite;
+        }
+
+        .wedding-day-message {
+            font-size: 24px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .wedding-day-hearts {
+            font-size: 60px;
+            animation: heartBeat 2s ease-in-out infinite;
+            margin: 20px 0;
+        }
+
+        @keyframes weddingDayAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes goldPulse {
+            0%, 100% {
+                color: #f4d03f;
+                text-shadow: 0 0 20px rgba(244, 208, 63, 0.5);
+            }
+            50% {
+                color: #d4af37;
+                text-shadow: 0 0 30px rgba(212, 175, 55, 0.8);
+            }
+        }
+
+        @keyframes heartBeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        /* Confetti animation */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f4d03f;
+            animation: confettiFall 3s linear infinite;
+        }
+
+        .confetti:nth-child(odd) {
+            background: #d4af37;
+            border-radius: 50%;
+        }
+
+        .confetti:nth-child(even) {
+            background: #8b2332;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -668,6 +833,32 @@
                 <!-- Invitation card -->
                 <div class="invitation-card">
                     <img src="yammine_weeding1.png" alt="Invitation Mariage Yahya & Yassmine">
+                    
+                    <!-- Countdown Timer Overlay -->
+                    <div class="countdown-overlay" id="countdownOverlay">
+                        <div class="countdown-title">Plus que</div>
+                        <div class="countdown-timer">
+                            <div class="time-unit">
+                                <span class="number" id="days">000</span>
+                                <span class="label">Jours</span>
+                            </div>
+                            <span class="countdown-separator">:</span>
+                            <div class="time-unit">
+                                <span class="number" id="hours">00</span>
+                                <span class="label">Heures</span>
+                            </div>
+                            <span class="countdown-separator">:</span>
+                            <div class="time-unit">
+                                <span class="number" id="minutes">00</span>
+                                <span class="label">Min</span>
+                            </div>
+                            <span class="countdown-separator">:</span>
+                            <div class="time-unit">
+                                <span class="number" id="seconds">00</span>
+                                <span class="label">Sec</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="envelope-front"></div>
@@ -694,6 +885,19 @@
         Pour: <span id="displayName"></span>
     </div>
 
+    <!-- Wedding Day Celebration Overlay -->
+    <div class="wedding-day-overlay" id="weddingDayOverlay">
+        <div class="wedding-day-content">
+            <div class="wedding-day-title">🎉 C'est le Grand Jour! 🎉</div>
+            <div class="wedding-day-hearts">💕❤️💕</div>
+            <div class="wedding-day-message">
+                Sarah & Mohamed se marient aujourd'hui!<br>
+                Félicitations aux mariés! 🥂
+            </div>
+            <div class="wedding-day-hearts">💍👰🤵💍</div>
+        </div>
+    </div>
+
     <script>
         // URL Parameters and Name Management
         const nameInputOverlay = document.getElementById('nameInputOverlay');
@@ -714,13 +918,15 @@
             const nameFromUrl = getUrlParameter('name');
             
             if (nameFromUrl) {
-                // Show personalized invitation directly
+                // Show personalized invitation directly (shared invitation)
                 const decodedName = decodeURIComponent(nameFromUrl);
                 displayName.textContent = decodedName;
                 guestNameDisplay.classList.remove('hidden');
                 nameInputOverlay.classList.add('hidden');
+                // Hide share button for shared invitations
+                shareBtn.style.display = 'none';
             } else {
-                // Show name input form
+                // Show name input form (creating new invitation)
                 nameInputOverlay.classList.remove('hidden');
             }
         }
@@ -775,14 +981,14 @@
             shareBtn.classList.add('hidden');
         });
 
-        // Share functionality
+        // Share functionality (only for users who created the invitation)
         shareBtn.addEventListener('click', function() {
             const currentUrl = window.location.href;
             
             if (navigator.share) {
                 // Use Web Share API if available (mobile)
                 navigator.share({
-                    title: 'Invitation Mariage - Yahya & Yassmine',
+                    title: 'Invitation Mariage - Sarah & Mohamed',
                     text: 'Vous êtes invité(e) à notre mariage !',
                     url: currentUrl
                 });
@@ -804,6 +1010,93 @@
 
         // Initialize page
         initializePage();
+
+        // Countdown Timer Functionality
+        const weddingDate = new Date('2025-12-20T20:00:00').getTime();
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const weddingDayOverlay = document.getElementById('weddingDayOverlay');
+        const daysElement = document.getElementById('days');
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const timeLeft = weddingDate - now;
+
+            if (timeLeft > 0) {
+                // Calculate time units
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                // Update display
+                daysElement.textContent = days.toString().padStart(3, '0');
+                hoursElement.textContent = hours.toString().padStart(2, '0');
+                minutesElement.textContent = minutes.toString().padStart(2, '0');
+                secondsElement.textContent = seconds.toString().padStart(2, '0');
+            } else {
+                // Wedding day has arrived!
+                showWeddingDayDisplay();
+            }
+        }
+
+        function showWeddingDayDisplay() {
+            // Hide countdown
+            countdownOverlay.style.display = 'none';
+            
+            // Show wedding day celebration
+            weddingDayOverlay.style.display = 'flex';
+            
+            // Create confetti
+            createConfetti();
+            
+            // Stop the countdown timer
+            clearInterval(countdownInterval);
+        }
+
+        function createConfetti() {
+            const overlay = weddingDayOverlay;
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                    overlay.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }, i * 100);
+            }
+            
+            // Keep creating confetti every 3 seconds
+            setInterval(() => {
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('div');
+                        confetti.className = 'confetti';
+                        confetti.style.left = Math.random() * 100 + '%';
+                        confetti.style.animationDelay = Math.random() * 1 + 's';
+                        overlay.appendChild(confetti);
+
+                        setTimeout(() => {
+                            confetti.remove();
+                        }, 5000);
+                    }, i * 200);
+                }
+            }, 3000);
+        }
+
+        // Start countdown timer
+        const countdownInterval = setInterval(updateCountdown, 1000);
+        
+        // Initial countdown update
+        updateCountdown();
 
         // Create floating hearts
         function createHearts() {
